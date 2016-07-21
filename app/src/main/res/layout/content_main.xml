@@ -11,39 +11,23 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.tyhj.download.MainActivity"
     tools:showIn="@layout/activity_main">
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/tvname"
-            android:text="我的下载"
-            android:padding="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <ProgressBar
-            style="?android:attr/progressBarStyleHorizontal"
-            android:id="@+id/pbProgressbar"
-            android:layerType="hardware"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <LinearLayout
-            android:paddingTop="10dp"
-            android:layout_gravity="right"
-            android:orientation="horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <Button
-                android:id="@+id/btdown"
-                android:text="下载"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-            <Button
-                android:layout_marginLeft="10dp"
-                android:id="@+id/btpause"
-                android:text="暂停"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </LinearLayout>
+   <LinearLayout
+       android:orientation="vertical"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+      <EditText
+          android:textSize="18sp"
+          android:hint="再此输入"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_below="@+id/lvFile"
+          android:layout_alignParentLeft="true"
+          android:layout_alignParentStart="true" />
+      <ListView
+          android:id="@+id/lvFile"
+          android:divider="@null"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+      </ListView>
+   </LinearLayout>
 </RelativeLayout>

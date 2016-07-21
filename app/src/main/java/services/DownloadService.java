@@ -16,6 +16,8 @@ import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import entities.FileInfo;
 
@@ -24,20 +26,26 @@ public class DownloadService extends Service {
     public static final String ACTION_STRAT="ACTION_STRAT";
     public static final String ACTION_STOP="ACTION_STOP";
     public static final String ACTION_UPDATE="ACTION_UPDATE";
+    public static final String ACTION_FINISHED="ACTION_FINISHED";
     public static final String DOWNLOAD_PATH= Environment
             .getExternalStorageDirectory().getAbsolutePath()+"/Adownloads/";
-    private DownloadTask mTask=null;
+    private InitThread mInitThread=null;
+    //下载任务集合
+    private Map<Integer,DownloadTask> mTasks=
+            new LinkedHashMap<Integer, DownloadTask>();
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(ACTION_STRAT.equals(intent.getAction())){
             FileInfo fileInfo= (FileInfo) intent.getSerializableExtra("fileInfo");
-            Log.i("test","strat:"+fileInfo.toString());
-            new InitThread(fileInfo).start();
+            InitThread initThread=new InitThread(fileInfo);
+            DownloadTask.sExecutorService.execute(initThread);
         }else  if(ACTION_STOP.equals(intent.getAction())){
+            //暂停下载
             FileInfo fileInfo= (FileInfo) intent.getSerializableExtra("fileInfo");
-            Log.i("test","stop:"+fileInfo.toString());
-            if(mTask!=null){
-                mTask.isPause=true;
+            DownloadTask task=mTasks.get(fileInfo.getId());
+            if(task!=null){
+                //停止下载
+                task.isPause=true;
             }
         }
         return super.onStartCommand(intent, flags, startId);
@@ -50,8 +58,7 @@ public class DownloadService extends Service {
     }
 
 
-
-    Handler handler=new Handler(){
+     Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
@@ -59,8 +66,10 @@ public class DownloadService extends Service {
                     FileInfo fileInfo= (FileInfo) msg.obj;
                     Log.i("test","init:"+fileInfo.toString());
                     //启动下载任务
-                    mTask=new DownloadTask(DownloadService.this,fileInfo);
-                    mTask.download();
+                    DownloadTask task=new DownloadTask(DownloadService.this,fileInfo,3);
+                    task.download();
+                    //下载任务添加到集合中
+                    mTasks.put(fileInfo.getId(),task);
                     break;
             }
         }
